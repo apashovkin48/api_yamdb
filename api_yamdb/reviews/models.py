@@ -14,7 +14,7 @@ class Review(BaseModel):
         help_text='Введите оценку произведения',
         default=5,
         validators=[
-            MaxValueValidator(5),
+            MaxValueValidator(10),
             MinValueValidator(1)
         ]
     )
