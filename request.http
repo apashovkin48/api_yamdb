@@ -1,0 +1,38 @@
+@reviews = http://127.0.0.1:8000/api/v1/reviews/
+@review = http://127.0.0.1:8000/api/v1/reviews/1/
+@comments = http://127.0.0.1:8000/api/v1/reviews/1/comments/
+@comment = http://127.0.0.1:8000/api/v1/reviews/1/comments/1/
+
+###
+GET {{reviews}} HTTP/1.1
+content-type: application/json
+
+###
+GET {{review}} HTTP/1.1
+content-type: application/json
+
+###
+POST {{reviews}} HTTP/1.1
+content-type: application/json
+
+{
+    "text": "Тестовый отзыв",
+    "score": 10
+}
+
+###
+GET {{comments}} HTTP/1.1
+content-type: application/json
+
+###
+GET {{comment}} HTTP/1.1
+content-type: application/json
+
+###
+POST {{comments}} HTTP/1.1
+content-type: application/json
+
+
+{
+    "text": "Ну тут полюбому пятёрочка"
+}

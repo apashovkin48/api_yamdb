@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users.apps.UsersConfig',
     'api.apps.ApiConfig',
+    'reviews.apps.ReviewsConfig'
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
 
 # Internationalization
 

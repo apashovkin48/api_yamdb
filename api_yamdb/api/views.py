@@ -1,11 +1,39 @@
+
+
+
+
 from django.shortcuts import render, get_object_or_404
-from rest_framework.decorators import  api_view
-from rest_framework import status
 from django.contrib.auth import get_user_model
-from rest_framework.response import Response
-from .serializers import ApiSignupSerializer, ApiTokenSerializer
 from django.core.mail import send_mail
+from rest_framework.decorators import  api_view
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import (
+    ReviewSerializer,
+    CommentSerializer,
+    ApiSignupSerializer,
+    ApiTokenSerializer
+)
+from reviews.models import Review
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        return review.comments.all()
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        serializer.save(review=review)
+        
 
 User = get_user_model()
 
