@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework import viewsets, status, filters, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
