@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status, filters, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
@@ -15,9 +15,13 @@ from .serializers import (
     CategorySerializer,
     GenreSerializer,
     ReadOnlyTitleSerializer,
-    TitleSerializer
+    TitleSerializer,
+    UserSerializer,
+    MeSerilizer
 )
 from reviews.models import Review, Category, Genre, Title
+from .permission import IsOnlyAdmin
+
 
 """
 class TitlesFilter(filters.FilterSet):
@@ -40,13 +44,14 @@ class TitlesFilter(filters.FilterSet):
         fields = ['name', 'year', 'genre', 'category']
 """
 
+
 class TitleViewSet(viewsets.ModelViewSet):
     """ViewSet для title"""
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = [DjangoFilterBackend]
-    #filterset_class = TitlesFilter
+    # filterset_class = TitlesFilter
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
@@ -100,6 +105,21 @@ def api_signup(request):
     serializer.is_valid(raise_exception=True)
     email = serializer.validated_data.get('email')
     username = serializer.validated_data.get('username')
+
+    user = User.objects.filter(username=username).first()
+    if user and user.email != email:
+        return Response(
+            {'email': 'неверный email'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user = User.objects.filter(email=email).first()
+    if user and user.username != username:
+        return Response(
+            {'username': 'неверный username'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     user, created = User.objects.get_or_create(email=email, username=username)
 
     send_mail(
@@ -126,3 +146,25 @@ def api_token(request):
     return Response({
         'Token': f'Bearer {str(RefreshToken.for_user(user).access_token)}'
     })
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    http_method_names = ('get', 'post', 'patch', 'delete')
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
+    lookup_field = 'username'
+    permission_classes = (IsOnlyAdmin,)
+    @action(methods=('get', 'patch'),
+            detail=False, permission_classes=(permissions.IsAuthenticated,))
+    def me(self, request):
+        serilizer = MeSerilizer(
+            self.request.user,
+            request.data,
+            partial=True
+        )
+        serilizer.is_valid(raise_exception=True)
+        if request.method == 'PATCH':
+            serilizer.save()
+        return Response(serilizer.data, status=status.HTTP_200_OK)

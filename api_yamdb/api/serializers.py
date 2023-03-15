@@ -1,4 +1,9 @@
+import re
+
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 from reviews.models import Genre, Category, Title, Review, Comment
 
 
@@ -77,10 +82,18 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class ApiSignupSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-    username = serializers.CharField(required=True)
-
-
+    email = serializers.EmailField(required=True, max_length=254)
+    username = serializers.CharField(required=True, max_length=150,
+                                     validators=[username_check])
 class ApiTokenSerializer(serializers.Serializer):
-    confirmation_code = serializers.CharField(required=True)
-    username = serializers.CharField(required=True)
+    confirmation_code=serializers.CharField(required=True)
+    username = serializers.CharField(required=True,max_length=150,  validators=[username_check])
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=['username','email','first_name','last_name','bio','role']
+
+class MeSerilizer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        read_only_fields=('role',)

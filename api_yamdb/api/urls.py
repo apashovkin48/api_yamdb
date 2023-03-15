@@ -1,8 +1,11 @@
 from rest_framework.routers import SimpleRouter
 from django.urls import path, include
 from . import views
+from rest_framework import routers
+
 
 router = SimpleRouter()
+router.register('users',views.UserViewSet,basename='users')
 router.register('genres', views.GenreViewSet, basename='genres')
 router.register('categories', views.CategoryViewSet, basename='categories')
 router.register('titles', views.TitleViewSet, basename='titles')
