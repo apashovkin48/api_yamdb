@@ -1,6 +1,7 @@
 from rest_framework.routers import SimpleRouter
 from django.urls import path, include
 from api.views import ReviewViewSet, CommentViewSet
+from . import views
 
 router = SimpleRouter()
 
@@ -30,6 +31,9 @@ router.register(
 )
 """
 
+
 urlpatterns = [
-    path('v1/', include(router.urls)),
+path('v1/', include(router.urls)),
+path('v1/auth/signup/',views.api_signup),
+path('v1/auth/token/',views.api_token)
 ]

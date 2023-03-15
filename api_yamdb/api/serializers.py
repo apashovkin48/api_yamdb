@@ -27,3 +27,12 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
+
+class ApiSignupSerializer(serializers.Serializer):
+    email=serializers.EmailField(required=True)
+    username = serializers.CharField(required=True)
+    
+
+class ApiTokenSerializer(serializers.Serializer):
+    confirmation_code=serializers.CharField(required=True)
+    username = serializers.CharField(required=True)
