@@ -31,7 +31,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.slug
-    
+
 
 class Title(models.Model):
     """Модель Title"""
@@ -41,7 +41,7 @@ class Title(models.Model):
     )
     year = models.PositiveSmallIntegerField(
         verbose_name='Год издания',
-        )
+    )
     category = models.ForeignKey(
         Category,
         blank=True,

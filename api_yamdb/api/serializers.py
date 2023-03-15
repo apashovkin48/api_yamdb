@@ -1,28 +1,50 @@
 from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
-from rest_framework.validators import UniqueTogetherValidator
 
-from reviews.models import *
-
-class CategoryField(serializers.SlugRelatedField):
-    pass
+from reviews.models import Genre, Category, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    pass
 
-
-class GenreField(serializers.SlugRelatedField):
-    pass
+    class Meta:
+        model = Category
+        exclude = ('id',)
+        lookup_field = 'slug'
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'}
+        }
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    pass
+
+    class Meta:
+        model = Genre
+        exclude = ('id',)
+        lookup_field = 'slug'
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'}
+        }
+
+
+class ReadOnlyTitleSerializer(serializers.ModelSerializer):
+    rating = serializers.IntegerField(
+        source='reviews__score__avg', read_only=True
+    )
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
+
+    class Meta:
+        model = Title
+        fields = '__all__'
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    pass
+    genre = serializers.SlugRelatedField(
+        slug_field='slug', many=True, queryset=Genre.objects.all()
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Category.objects.all()
+    )
 
-
-class ProfileSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = Title
+        fields = '__all__'
