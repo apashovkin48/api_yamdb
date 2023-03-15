@@ -2,6 +2,7 @@ import re
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from reviews.models import Genre, Category, Title, Review, Comment
+from rest_framework.validators import UniqueTogetherValidator
 
 User = get_user_model()
 
@@ -65,30 +66,53 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    """
-    title = serializers.SlugRelatedField(
-        slug_field='name',
-        read_only=True,
-    )
-    """
-
-    class Meta:
-        model = Review
-        fields = '__all__'
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    """
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
     )
-    """
-    review = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Review
+        fields = [
+            'id',
+            'text',
+            'author',
+            'score',
+            'pub_date'
+        ]
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )
 
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = [
+            'id',
+            'text',
+            'author',
+            'pub_date'
+        ]
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Comment.objects.all(),
+                fields=['author', 'review']
+            )
+        ]
+
+    def validate(self, data):
+        print(data.get('review'))
+        return data
+
+    """    def validate(self, data):
+        if self.context.get('request').user == data.get('following'):
+            raise serializers.ValidationError(
+                "Еще свою маму подпиши на себя клоун..."
+            )
+        return data"""
 
 
 class ApiSignupSerializer(serializers.Serializer):

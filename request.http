@@ -1,38 +1,67 @@
-@reviews = http://127.0.0.1:8000/api/v1/reviews/
-@review = http://127.0.0.1:8000/api/v1/reviews/1/
-@comments = http://127.0.0.1:8000/api/v1/reviews/1/comments/
-@comment = http://127.0.0.1:8000/api/v1/reviews/1/comments/1/
+@create_user = http://127.0.0.1:8000/api/v1/auth/signup/
+@get_token = http://127.0.0.1:8000/api/v1/auth/token/
+@reviews = http://127.0.0.1:8000/api/v1/titles/1/reviews/
+@review = http://127.0.0.1:8000/api/v1/titles/1/reviews/1/
+@comments = http://127.0.0.1:8000/api/v1/titles/1/reviews/1/comments/
+@comment = http://127.0.0.1:8000/api/v1/titles/1/reviews/1/comments/1/
+
+
+###
+POST {{create_user}} HTTP/1.1
+content-type: application/json
+
+{
+    "email": "user@example.com",
+    "username": "string"
+}
+
+
+###
+POST {{get_token}} HTTP/1.1
+content-type: application/json
+
+{
+    "username": "string",
+    "confirmation_code": "2939e4fa-b8c6-4f37-afe3-c31b1017b53d"
+}
+
 
 ###
 GET {{reviews}} HTTP/1.1
 content-type: application/json
 
+
 ###
 GET {{review}} HTTP/1.1
 content-type: application/json
 
+
 ###
 POST {{reviews}} HTTP/1.1
 content-type: application/json
+authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5MDAzNzgzLCJpYXQiOjE2Nzg5MTczODMsImp0aSI6ImI1OGRlNDg3NjFkYTRlY2U5MTNlOGJkNGY4YmNhZTJkIiwidXNlcl9pZCI6MX0.x-2v5N3TiZuAIgmNJ_6Utq9AJvQPZEXJIYFFRKYnv1E
 
 {
-    "text": "Тестовый отзыв",
-    "score": 10
+    "text": "string",
+    "score": 2
 }
+
 
 ###
 GET {{comments}} HTTP/1.1
 content-type: application/json
 
+
 ###
 GET {{comment}} HTTP/1.1
 content-type: application/json
 
+
 ###
 POST {{comments}} HTTP/1.1
 content-type: application/json
-
+authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5MDAzNzgzLCJpYXQiOjE2Nzg5MTczODMsImp0aSI6ImI1OGRlNDg3NjFkYTRlY2U5MTNlOGJkNGY4YmNhZTJkIiwidXNlcl9pZCI6MX0.x-2v5N3TiZuAIgmNJ_6Utq9AJvQPZEXJIYFFRKYnv1E
 
 {
-    "text": "Ну тут полюбому пятёрочка"
+    "text": "string"
 }
