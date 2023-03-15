@@ -1,4 +1,3 @@
-from api.permissions import IsAdminOrReadOnly
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
@@ -19,8 +18,13 @@ from .serializers import (
     UserSerializer,
     MeSerilizer
 )
-from reviews.models import Review, Category, Genre, Title, Comment
-from .permission import IsOnlyAdmin
+from reviews.models import (
+    Review,
+    Category,
+    Genre,
+    Title
+)
+from .permissions import IsOnlyAdmin, IsAdminOrReadOnly
 
 
 """
