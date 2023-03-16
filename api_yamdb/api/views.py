@@ -24,38 +24,17 @@ from reviews.models import (
     Genre,
     Title
 )
-from .permissions import IsOnlyAdmin, IsAdminOrReadOnly
-
-
-"""
-class TitlesFilter(filters.FilterSet):
-
-    name = filters.CharFilter(
-        field_name='name',
-        lookup_expr='icontains'
-    )
-    category = filters.CharFilter(
-        field_name='category__slug',
-        lookup_expr='icontains'
-    )
-    genre = filters.CharFilter(
-        field_name='genre__slug',
-        lookup_expr='icontains'
-    )
-
-    class Meta:
-        model = Title
-        fields = ['name', 'year', 'genre', 'category']
-"""
+from .permissions import IsOnlyAdmin
+from .filters import TitlesFilter
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """ViewSet для title"""
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsOnlyAdmin,)
     filter_backends = [DjangoFilterBackend]
-    # filterset_class = TitlesFilter
+    filterset_class = TitlesFilter
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
@@ -67,7 +46,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     """ViewSet для Genre"""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsOnlyAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -77,7 +56,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """ViewSet для Category"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsOnlyAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
