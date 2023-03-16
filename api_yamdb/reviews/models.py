@@ -109,7 +109,7 @@ class Review(BaseModel):
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'title'],
-                name='unique subscribe'
+                name='unique_review'
             )
         ]
 

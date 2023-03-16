@@ -1,8 +1,8 @@
 import re
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from reviews.models import Genre, Category, Title, Review, Comment
-from rest_framework.validators import UniqueTogetherValidator
 
 User = get_user_model()
 
@@ -87,6 +87,22 @@ class ReviewSerializer(serializers.ModelSerializer):
                 'Недопустимое значение рейтинга!'
             )
         return value
+
+    def validate(self, data):
+        title = get_object_or_404(
+            Title,
+            id=self.context.get('view').kwargs.get('title_id')
+        )
+        author = self.context.get('request').user
+
+        if (
+            title.reviews.filter(author=author).exists()
+            and self.context.get('request').method != 'PATCH'
+        ):
+            raise serializers.ValidationError(
+                "Вы уже написали свой отзыв к данному произведению"
+            )
+        return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
