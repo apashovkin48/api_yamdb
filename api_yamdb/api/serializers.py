@@ -81,6 +81,13 @@ class ReviewSerializer(serializers.ModelSerializer):
             'pub_date'
         ]
 
+    def validate_score(self, value):
+        if value < 1 or value > 10:
+            raise serializers.ValidationError(
+                'Недопустимое значение рейтинга!'
+            )
+        return value
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
@@ -96,23 +103,6 @@ class CommentSerializer(serializers.ModelSerializer):
             'author',
             'pub_date'
         ]
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Comment.objects.all(),
-                fields=['author', 'review']
-            )
-        ]
-
-    def validate(self, data):
-        print(data.get('review'))
-        return data
-
-    """    def validate(self, data):
-        if self.context.get('request').user == data.get('following'):
-            raise serializers.ValidationError(
-                "Еще свою маму подпиши на себя клоун..."
-            )
-        return data"""
 
 
 class ApiSignupSerializer(serializers.Serializer):
