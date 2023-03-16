@@ -1,8 +1,8 @@
 import uuid
-
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
+
 
 class User(AbstractUser):
     ADMIN = 'admin'
@@ -20,7 +20,10 @@ class User(AbstractUser):
         validators=[
             RegexValidator(
                 regex='^[\w.@+-]+\Z',
-                message='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.',
+                message=(
+                    'Required. 150 characters or fewer.'
+                    'Letters, digits and @/./+/-/_ only.'
+                ),
             ),
         ])
     email = models.EmailField(unique=True)
@@ -34,7 +37,7 @@ class User(AbstractUser):
         choices=ROLES,
         default=USER,
     )
-    confirmation_code=models.TextField(default=uuid.uuid4)
+    confirmation_code = models.TextField(default=uuid.uuid4)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username',)
