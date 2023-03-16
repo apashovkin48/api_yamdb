@@ -148,3 +148,7 @@ dmypy.json
 # папки со статикой и медиа
 media/
 
+# БД, эмулятор почты, миграции
+*migrations/
+*sent_emails/
+*db.sqlite3

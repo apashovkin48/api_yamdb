@@ -1,6 +1,9 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.contrib.auth import get_user_model
 from core.models import BaseModel
+
+User = get_user_model()
 
 
 class Genre(models.Model):
@@ -66,7 +69,7 @@ class Title(models.Model):
     )
 
     def __str__(self):
-        return self.name[15]
+        return self.name[:15]
 
 
 class Review(BaseModel):
@@ -84,8 +87,6 @@ class Review(BaseModel):
             MinValueValidator(1)
         ]
     )
-    # uncommetn after add foreign key model
-    """
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -100,12 +101,17 @@ class Review(BaseModel):
         verbose_name='Произведение',
         help_text='Произведение из базы данных'
     )
-    """
 
     class Meta:
         ordering = ('-pub_date',)
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_review'
+            )
+        ]
 
     def __str__(self):
         return self.text[:15]
@@ -113,10 +119,8 @@ class Review(BaseModel):
 
 class Comment(BaseModel):
     # after add user logic
-    """
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
-    """
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField()

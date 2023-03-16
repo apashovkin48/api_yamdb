@@ -1,6 +1,7 @@
 import re
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from reviews.models import Genre, Category, Title, Review, Comment
 
 User = get_user_model()
@@ -65,30 +66,59 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    """
-    title = serializers.SlugRelatedField(
-        slug_field='name',
-        read_only=True,
-    )
-    """
-
-    class Meta:
-        model = Review
-        fields = '__all__'
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    """
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
     )
-    """
-    review = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Review
+        fields = [
+            'id',
+            'text',
+            'author',
+            'score',
+            'pub_date'
+        ]
+
+    def validate_score(self, value):
+        if value < 1 or value > 10:
+            raise serializers.ValidationError(
+                'Недопустимое значение рейтинга!'
+            )
+        return value
+
+    def validate(self, data):
+        title = get_object_or_404(
+            Title,
+            id=self.context.get('view').kwargs.get('title_id')
+        )
+        author = self.context.get('request').user
+
+        if (
+            title.reviews.filter(author=author).exists()
+            and self.context.get('request').method != 'PATCH'
+        ):
+            raise serializers.ValidationError(
+                "Вы уже написали свой отзыв к данному произведению"
+            )
+        return data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )
 
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = [
+            'id',
+            'text',
+            'author',
+            'pub_date'
+        ]
 
 
 class ApiSignupSerializer(serializers.Serializer):
