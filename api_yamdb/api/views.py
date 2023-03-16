@@ -3,7 +3,13 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view, action
-from rest_framework import viewsets, status, filters, permissions
+from rest_framework import (
+    viewsets,
+    status,
+    filters,
+    permissions,
+    mixins
+)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
@@ -32,7 +38,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     """ViewSet для title"""
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = (IsOnlyAdmin,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitlesFilter
 
@@ -46,7 +51,6 @@ class GenreViewSet(viewsets.ModelViewSet):
     """ViewSet для Genre"""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsOnlyAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -56,7 +60,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """ViewSet для Category"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsOnlyAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
