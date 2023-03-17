@@ -65,6 +65,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """ViewSet для модели Review"""
     serializer_class = ReviewSerializer
     http_method_names = ('get', 'post', 'patch', 'delete')
 
@@ -78,6 +79,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """ViewSet для модели Comment"""
     serializer_class = CommentSerializer
     http_method_names = ('get', 'post', 'patch', 'delete')
 

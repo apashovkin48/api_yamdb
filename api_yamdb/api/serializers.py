@@ -59,6 +59,7 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
         ]
 
     def get_rating(self, obj):
+        """Расчет среднего рейтинга к произведениям"""
         return obj.reviews.aggregate(Avg('score')).get('score__avg')
 
 
@@ -84,10 +85,12 @@ class TitleSerializer(serializers.ModelSerializer):
         ]
 
     def get_rating(self, obj):
+        """Расчет среднего рейтинга к произведениям"""
         return obj.reviews.aggregate(Avg('score')).get('score__avg')
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Serializer для модели Review"""
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
@@ -128,6 +131,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """Serializer для модели Comment"""
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
