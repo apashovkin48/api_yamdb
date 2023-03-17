@@ -20,7 +20,7 @@ class User(AbstractUser):
         unique=True,
         validators=[
             RegexValidator(
-                regex='^[\w.@+-]+\Z',
+                regex=r'^[\w.@+-]+\Z',
                 message=(
                     'Required. 150 characters or fewer.'
                     'Letters, digits and @/./+/-/_ only.'
