@@ -1,0 +1,95 @@
+@create_user = http://127.0.0.1:8000/api/v1/auth/signup/
+@get_token = http://127.0.0.1:8000/api/v1/auth/token/
+@reviews = http://127.0.0.1:8000/api/v1/titles/1/reviews/
+@review = http://127.0.0.1:8000/api/v1/titles/1/reviews/1/
+@comments = http://127.0.0.1:8000/api/v1/titles/1/reviews/1/comments/
+@comment = http://127.0.0.1:8000/api/v1/titles/1/reviews/1/comments/1/
+@titles = http://127.0.0.1:8000/api/v1/titles/
+@title = http://127.0.0.1:8000/api/v1/titles/1/
+
+
+###
+POST {{create_user}} HTTP/1.1
+content-type: application/json
+
+{
+    "email": "user@example.com",
+    "username": "string"
+}
+
+
+###
+POST {{get_token}} HTTP/1.1
+content-type: application/json
+
+{
+    "username": "string",
+    "confirmation_code": "1dc51095-df25-420f-856e-3577cba49419"
+}
+
+
+###
+GET {{reviews}} HTTP/1.1
+content-type: application/json
+
+
+###
+GET {{review}} HTTP/1.1
+content-type: application/json
+
+
+###
+POST {{reviews}} HTTP/1.1
+content-type: application/json
+authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5MDAzNzgzLCJpYXQiOjE2Nzg5MTczODMsImp0aSI6ImI1OGRlNDg3NjFkYTRlY2U5MTNlOGJkNGY4YmNhZTJkIiwidXNlcl9pZCI6MX0.x-2v5N3TiZuAIgmNJ_6Utq9AJvQPZEXJIYFFRKYnv1E
+
+{
+    "text": "string",
+    "score": 9
+}
+
+
+###
+GET {{comments}} HTTP/1.1
+content-type: application/json
+
+
+###
+GET {{comment}} HTTP/1.1
+content-type: application/json
+
+
+###
+POST {{comments}} HTTP/1.1
+content-type: application/json
+authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5MDAzNzgzLCJpYXQiOjE2Nzg5MTczODMsImp0aSI6ImI1OGRlNDg3NjFkYTRlY2U5MTNlOGJkNGY4YmNhZTJkIiwidXNlcl9pZCI6MX0.x-2v5N3TiZuAIgmNJ_6Utq9AJvQPZEXJIYFFRKYnv1E
+
+{
+    "text": "string"
+}
+
+###
+GET {{titles}} HTTP/1.1
+content-type: application/json
+
+
+###
+GET {{title}} HTTP/1.1
+content-type: application/json
+
+
+###
+POST {{titles}} HTTP/1.1
+content-type: application/json
+authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5MDc3MDM3LCJpYXQiOjE2Nzg5OTA2MzcsImp0aSI6IjU3NmI2MWIwOWZiZTQ3YmE5NmI4ZWRiNTRhYWVkODc4IiwidXNlcl9pZCI6MX0.UPN0KB7SpfhZ8cNhAwQU7VZAwSTqwcTCT46AiNvEta8
+
+{
+    "name": "string",
+    "year": 0,
+    "description": "string",
+    "genre": 
+    [
+        "string"
+    ],
+    "category": "string"
+}
