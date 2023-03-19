@@ -42,29 +42,15 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
 
     class Meta:
         model = Title
-        fields = [
-            'id',
-            'name',
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category"
-        ]
-
-    def get_rating(self, obj):
-        """Расчет среднего рейтинга к произведениям"""
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
+        fields = '__all__'
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
     genre = serializers.SlugRelatedField(
         slug_field='slug', many=True, queryset=Genre.objects.all()
     )
@@ -74,19 +60,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = [
-            'id',
-            'name',
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category"
-        ]
-
-    def get_rating(self, obj):
-        """Расчет среднего рейтинга к произведениям"""
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
+        fields = '__all__'
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -114,19 +88,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        title = get_object_or_404(
-            Title,
-            id=self.context.get('view').kwargs.get('title_id')
-        )
-        author = self.context.get('request').user
-
-        if (
-            title.reviews.filter(author=author).exists()
-            and self.context.get('request').method != 'PATCH'
-        ):
-            raise serializers.ValidationError(
-                "Вы уже написали свой отзыв к данному произведению"
+        if self.context.get('request').method != 'PATCH':
+            title = get_object_or_404(
+                Title,
+                id=self.context.get('view').kwargs.get('title_id')
             )
+            author = self.context.get('request').user
+
+            if title.reviews.filter(author=author).exists():
+                raise serializers.ValidationError(
+                    "Вы уже написали свой отзыв к данному произведению"
+                )
         return data
 
 

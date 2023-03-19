@@ -81,7 +81,6 @@ class Review(BaseModel):
     score = models.IntegerField(
         verbose_name="Оценка произведения",
         help_text='Введите оценку произведения',
-        default=5,
         validators=[
             MaxValueValidator(10),
             MinValueValidator(1)
