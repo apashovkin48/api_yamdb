@@ -1,5 +1,4 @@
 import csv
-import os
 from users.models import User
 from reviews.models import (
     Category,
