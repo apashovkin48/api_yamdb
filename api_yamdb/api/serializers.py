@@ -2,7 +2,6 @@ import re
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from django.db.models import Avg
 from reviews.models import Genre, Category, Title, Review, Comment
 
 User = get_user_model()
@@ -42,7 +41,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+    rating = serializers.ReadOnlyField()
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
 
@@ -58,12 +57,9 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
             "category"
         ]
 
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
-
 
 class TitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+    rating = serializers.ReadOnlyField()
     genre = serializers.SlugRelatedField(
         slug_field='slug', many=True, queryset=Genre.objects.all()
     )
@@ -83,11 +79,9 @@ class TitleSerializer(serializers.ModelSerializer):
             "category"
         ]
 
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
-
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Serializer для модели Review"""
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
@@ -111,23 +105,22 @@ class ReviewSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        title = get_object_or_404(
-            Title,
-            id=self.context.get('view').kwargs.get('title_id')
-        )
-        author = self.context.get('request').user
-
-        if (
-            title.reviews.filter(author=author).exists()
-            and self.context.get('request').method != 'PATCH'
-        ):
-            raise serializers.ValidationError(
-                "Вы уже написали свой отзыв к данному произведению"
+        if self.context.get('request').method != 'PATCH':
+            title = get_object_or_404(
+                Title,
+                id=self.context.get('view').kwargs.get('title_id')
             )
+            author = self.context.get('request').user
+
+            if title.reviews.filter(author=author).exists():
+                raise serializers.ValidationError(
+                    "Вы уже написали свой отзыв к данному произведению"
+                )
         return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """Serializer для модели Comment"""
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True

@@ -73,7 +73,7 @@ class Title(models.Model):
 
 
 class Review(BaseModel):
-
+    """Модель для отзывов к произведениям (Title)"""
     text = models.TextField(
         verbose_name="Текст отзыва",
         help_text='Введите текст отзыва'
@@ -81,7 +81,6 @@ class Review(BaseModel):
     score = models.IntegerField(
         verbose_name="Оценка произведения",
         help_text='Введите оценку произведения',
-        default=5,
         validators=[
             MaxValueValidator(10),
             MinValueValidator(1)
@@ -118,7 +117,7 @@ class Review(BaseModel):
 
 
 class Comment(BaseModel):
-    # after add user logic
+    """Модель для комментариев к отзывам (Review)"""
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
     review = models.ForeignKey(

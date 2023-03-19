@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (
     viewsets,
@@ -41,7 +42,7 @@ User = get_user_model()
 
 class TitleViewSet(viewsets.ModelViewSet):
     """ViewSet для title"""
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     serializer_class = TitleSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitlesFilter
@@ -80,6 +81,7 @@ class CategoryViewSet(mixins.ListModelMixin,
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """ViewSet для модели Review"""
     serializer_class = ReviewSerializer
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrAdminOrModeratorReadOnly,)
@@ -94,6 +96,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """ViewSet для модели Comment"""
     serializer_class = CommentSerializer
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrAdminOrModeratorReadOnly,)
