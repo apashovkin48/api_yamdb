@@ -2,7 +2,6 @@ import re
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from django.db.models import Avg
 from reviews.models import Genre, Category, Title, Review, Comment
 
 User = get_user_model()
@@ -42,15 +41,25 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
+    rating = serializers.ReadOnlyField()
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
 
     class Meta:
         model = Title
-        fields = '__all__'
+        fields = [
+            'id',
+            'name',
+            "year",
+            "rating",
+            "description",
+            "genre",
+            "category"
+        ]
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    rating = serializers.ReadOnlyField()
     genre = serializers.SlugRelatedField(
         slug_field='slug', many=True, queryset=Genre.objects.all()
     )
@@ -60,7 +69,15 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = '__all__'
+        fields = [
+            'id',
+            'name',
+            "year",
+            "rating",
+            "description",
+            "genre",
+            "category"
+        ]
 
 
 class ReviewSerializer(serializers.ModelSerializer):

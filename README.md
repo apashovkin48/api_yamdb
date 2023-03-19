@@ -44,3 +44,9 @@ python3 manage.py runserver
 ```
 .../redoc/
 ```
+
+# Кастомные manage команды
+Для загрузки в бд тестовых данных используйте команду:
+```
+python3 manage.py import_db_from_csv
+```
