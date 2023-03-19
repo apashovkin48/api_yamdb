@@ -21,9 +21,11 @@ from reviews.models import (
 )
 
 from .filters import TitlesFilter
-from .permissions import (IsOnlyAdmin,
-                          IsAdminOrReadOnly,
-                          IsAuthorOrAdminOrModeratorReadOnly)
+from .permissions import (
+    IsOnlyAdmin,
+    IsAdminOrReadOnly,
+    IsAuthorOrAdminOrModeratorReadOnly
+)
 from .serializers import (
     ReviewSerializer,
     CommentSerializer,
