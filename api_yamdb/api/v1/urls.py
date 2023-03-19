@@ -1,5 +1,6 @@
-from rest_framework.routers import SimpleRouter
 from api import views
+from django.urls import path, include
+from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter()
 router.register('users', views.UserViewSet, basename='users')
@@ -16,3 +17,12 @@ router.register(
     views.CommentViewSet,
     basename='comments'
 )
+urlpatterns_auth = [
+    path('signup/', views.api_signup),
+    path('token/', views.api_token)
+]
+
+urlpatterns = [
+    path('', include(router.urls)),
+    path('auth/', include(urlpatterns_auth)),
+]

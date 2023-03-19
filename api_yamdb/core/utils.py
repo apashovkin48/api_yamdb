@@ -1,5 +1,6 @@
 import csv
-from users.models import User
+
+from api_yamdb.settings import BASE_DIR
 from reviews.models import (
     Category,
     Comment,
@@ -7,7 +8,7 @@ from reviews.models import (
     Review,
     Title,
 )
-from api_yamdb.settings import BASE_DIR
+from users.models import User
 
 
 def add_user(reader):
@@ -91,10 +92,10 @@ FUNC = {
 
 def import_from_csv(manage_command, file_name: str):
     manage_command.stdout.write(f'Start import {file_name} csv file')
-    with (
-        open(BASE_DIR / f'static/data/{file_name}.csv', encoding='utf-8')
-        as csv_file
-    ):
+    with open(
+            BASE_DIR / f'static/data/{file_name}.csv',
+            encoding='utf-8'
+    ) as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
         add_func = FUNC.get(file_name)

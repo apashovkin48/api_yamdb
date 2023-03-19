@@ -1,25 +1,14 @@
-import re
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from rest_framework import serializers
 from reviews.models import Genre, Category, Title, Review, Comment
+
+from .validators import username_check
 
 User = get_user_model()
 
 
-def username_check(username):
-    if username == 'me':
-        raise serializers.ValidationError(
-            {'username': 'Нельзя использовать me'})
-    if not re.match(r'^[\w.@+-]+\Z', username):
-        raise serializers.ValidationError(
-            {'username': 'Required. 150 characters or fewer.'
-                         'Letters, digits and @/./+/-/_ only.'}
-        )
-
-
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Category
         exclude = ('id',)
@@ -30,7 +19,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Genre
         exclude = ('id',)
@@ -146,6 +134,25 @@ class ApiSignupSerializer(serializers.Serializer):
         max_length=150,
         validators=[username_check]
     )
+
+    def validate(self, data):
+        email = data.get('email')
+        username = data.get('username')
+
+        user = User.objects.filter(username=username).first()
+        if user and user.email != email:
+            raise serializers.ValidationError(
+                {'email': 'неверный email'},
+
+            )
+
+        user = User.objects.filter(email=email).first()
+        if user and user.username != username:
+            raise serializers.ValidationError(
+                {'username': 'неверный username'},
+            )
+
+        return data
 
 
 class ApiTokenSerializer(serializers.Serializer):

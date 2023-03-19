@@ -1,7 +1,8 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (
     viewsets,
@@ -12,7 +13,7 @@ from rest_framework import (
 )
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import (
     Review,
     Category,
@@ -119,26 +120,12 @@ def api_signup(request):
     email = serializer.validated_data.get('email')
     username = serializer.validated_data.get('username')
 
-    user = User.objects.filter(username=username).first()
-    if user and user.email != email:
-        return Response(
-            {'email': 'неверный email'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    user = User.objects.filter(email=email).first()
-    if user and user.username != username:
-        return Response(
-            {'username': 'неверный username'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
     user, created = User.objects.get_or_create(email=email, username=username)
 
     send_mail(
-        subject='Тема письма',
+        subject='Код подтверждения',
         message=f'Код подтверждения: {user.confirmation_code}',
-        from_email='FFFF@ffff.com',
+        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email]
     )
     return Response(serializer.validated_data, status=status.HTTP_200_OK)
@@ -157,7 +144,7 @@ def api_token(request):
                                               "или оно некорректно"},
                         status=status.HTTP_400_BAD_REQUEST)
     return Response({
-        'Token': f'Bearer {str(RefreshToken.for_user(user).access_token)}'
+        'Token': f'Bearer {str(AccessToken.for_user(user))}'
     })
 
 
