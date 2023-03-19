@@ -1,4 +1,5 @@
 import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
@@ -19,13 +20,14 @@ class User(AbstractUser):
         unique=True,
         validators=[
             RegexValidator(
-                regex='^[\w.@+-]+\Z',
+                regex=r'^[\w.@+-]+\Z',
                 message=(
                     'Required. 150 characters or fewer.'
                     'Letters, digits and @/./+/-/_ only.'
                 ),
             ),
-        ])
+        ]
+    )
     email = models.EmailField(unique=True)
     bio = models.TextField(
         'Биография',
