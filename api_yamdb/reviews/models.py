@@ -2,6 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
 from core.models import BaseModel
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -21,6 +22,9 @@ class Genre(models.Model):
     def __str__(self):
         return self.slug
 
+    class Meta:
+        ordering = ['name']
+
 
 class Category(models.Model):
     """Модель Category"""
@@ -36,6 +40,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.slug
+
+    class Meta:
+        ordering = ['name']
 
 
 class Title(models.Model):
@@ -61,8 +68,7 @@ class Title(models.Model):
         related_name='titles',
         verbose_name='Жанр произведения',
     )
-    description = models.CharField(
-        max_length=100,
+    description = models.TextField(
         blank=True,
         null=True,
         verbose_name='Описание произведения',
@@ -71,9 +77,17 @@ class Title(models.Model):
     def __str__(self):
         return self.name[:15]
 
+    def clean(self):
+        super().clean()
+        if self.year < 1900 or self.year > 2100:
+            raise ValidationError('Некорректный год')
+
+    class Meta:
+        ordering = ['name']
+
 
 class Review(BaseModel):
-
+    """Модель для отзывов к произведениям (Title)"""
     text = models.TextField(
         verbose_name="Текст отзыва",
         help_text='Введите текст отзыва'
@@ -81,7 +95,6 @@ class Review(BaseModel):
     score = models.IntegerField(
         verbose_name="Оценка произведения",
         help_text='Введите оценку произведения',
-        default=5,
         validators=[
             MaxValueValidator(10),
             MinValueValidator(1)
@@ -118,7 +131,7 @@ class Review(BaseModel):
 
 
 class Comment(BaseModel):
-    # after add user logic
+    """Модель для комментариев к отзывам (Review)"""
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
     review = models.ForeignKey(

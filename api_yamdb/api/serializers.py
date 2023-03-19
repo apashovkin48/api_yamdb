@@ -1,26 +1,14 @@
-import re
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from django.db.models import Avg
+from rest_framework import serializers
 from reviews.models import Genre, Category, Title, Review, Comment
+
+from .validators import username_check
 
 User = get_user_model()
 
 
-def username_check(username):
-    if username == 'me':
-        raise serializers.ValidationError(
-            {'username': 'Нельзя использовать me'})
-    if not re.match(r'^[\w.@+-]+\Z', username):
-        raise serializers.ValidationError(
-            {'username': 'Required. 150 characters or fewer.'
-                         'Letters, digits and @/./+/-/_ only.'}
-        )
-
-
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Category
         exclude = ('id',)
@@ -31,7 +19,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Genre
         exclude = ('id',)
@@ -42,7 +29,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+    rating = serializers.ReadOnlyField()
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
 
@@ -58,12 +45,9 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
             "category"
         ]
 
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
-
 
 class TitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+    rating = serializers.ReadOnlyField()
     genre = serializers.SlugRelatedField(
         slug_field='slug', many=True, queryset=Genre.objects.all()
     )
@@ -83,11 +67,9 @@ class TitleSerializer(serializers.ModelSerializer):
             "category"
         ]
 
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(Avg('score')).get('score__avg')
-
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Serializer для модели Review"""
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
@@ -111,23 +93,22 @@ class ReviewSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        title = get_object_or_404(
-            Title,
-            id=self.context.get('view').kwargs.get('title_id')
-        )
-        author = self.context.get('request').user
-
-        if (
-            title.reviews.filter(author=author).exists()
-            and self.context.get('request').method != 'PATCH'
-        ):
-            raise serializers.ValidationError(
-                "Вы уже написали свой отзыв к данному произведению"
+        if self.context.get('request').method != 'PATCH':
+            title = get_object_or_404(
+                Title,
+                id=self.context.get('view').kwargs.get('title_id')
             )
+            author = self.context.get('request').user
+
+            if title.reviews.filter(author=author).exists():
+                raise serializers.ValidationError(
+                    "Вы уже написали свой отзыв к данному произведению"
+                )
         return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """Serializer для модели Comment"""
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
@@ -153,6 +134,25 @@ class ApiSignupSerializer(serializers.Serializer):
         max_length=150,
         validators=[username_check]
     )
+
+    def validate(self, data):
+        email = data.get('email')
+        username = data.get('username')
+
+        user = User.objects.filter(username=username).first()
+        if user and user.email != email:
+            raise serializers.ValidationError(
+                {'email': 'неверный email'},
+
+            )
+
+        user = User.objects.filter(email=email).first()
+        if user and user.username != username:
+            raise serializers.ValidationError(
+                {'username': 'неверный username'},
+            )
+
+        return data
 
 
 class ApiTokenSerializer(serializers.Serializer):
