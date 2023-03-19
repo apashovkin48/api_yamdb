@@ -10,12 +10,6 @@ from reviews.models import (
 )
 from api_yamdb.settings import BASE_DIR
 
-# Получаем абсолютный путь до директории проекта
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Генерируем абсолютный путь до файла
-file_path = os.path.join(BASE_DIR, 'static/data/users.csv')
-
 
 def add_user(reader):
     for row in reader:
