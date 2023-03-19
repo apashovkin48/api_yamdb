@@ -1,17 +1,24 @@
 import csv
+import os
 from users.models import User
 from reviews.models import (
     Category,
+    Comment,
     Genre,
-    Title,
     Review,
-    Comment
+    Title,
 )
+
+# Получаем абсолютный путь до директории проекта
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Генерируем абсолютный путь до файла
+file_path = os.path.join(BASE_DIR, 'static/data/users.csv')
 
 
 def import_user_from_csv():
     print('Start import users from csv file')
-    with open('static/data/users.csv', encoding='utf-8') as csv_file:
+    with open(file_path, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
         for row in reader:
@@ -29,7 +36,7 @@ def import_user_from_csv():
 
 def import_category_from_csv():
     print('Start import category from csv file')
-    with open('static/data/category.csv', encoding='utf-8') as csv_file:
+    with open(file_path, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
         for row in reader:
@@ -43,7 +50,7 @@ def import_category_from_csv():
 
 def import_genre_from_csv():
     print('Start import genre from csv file')
-    with open('static/data/genre.csv', encoding='utf-8') as csv_file:
+    with open(file_path, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
         for row in reader:
@@ -57,7 +64,7 @@ def import_genre_from_csv():
 
 def import_title_from_csv():
     print('Start import title from csv file')
-    with open('static/data/titles.csv', encoding='utf-8') as csv_file:
+    with open(file_path, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
         for row in reader:
@@ -73,7 +80,7 @@ def import_title_from_csv():
 
 def import_review_from_csv():
     print('Start import review from csv file')
-    with open('static/data/review.csv', encoding='utf-8') as csv_file:
+    with open(file_path, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
         for row in reader:
@@ -92,7 +99,7 @@ def import_review_from_csv():
 
 def import_comment_from_csv():
     print('Start import comment from csv file')
-    with open('static/data/comments.csv', encoding='utf-8') as csv_file:
+    with open(file_path, encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         next(reader)
         for row in reader:
