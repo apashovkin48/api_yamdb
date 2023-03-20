@@ -29,7 +29,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
-    rating = serializers.ReadOnlyField()
+    rating = serializers.IntegerField(read_only=True)
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
 
@@ -47,7 +47,7 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    rating = serializers.ReadOnlyField()
+    rating = serializers.IntegerField(read_only=True)
     genre = serializers.SlugRelatedField(
         slug_field='slug', many=True, queryset=Genre.objects.all()
     )
@@ -93,7 +93,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        if self.context.get('request').method != 'PATCH':
+        if self.context.get('request').method == 'POST':
             title = get_object_or_404(
                 Title,
                 id=self.context.get('view').kwargs.get('title_id')

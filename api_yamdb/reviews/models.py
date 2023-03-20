@@ -2,7 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
 from core.models import BaseModel
-from django.core.exceptions import ValidationError
+from datetime import datetime
 
 User = get_user_model()
 
@@ -19,11 +19,11 @@ class Genre(models.Model):
         verbose_name='Жанр',
     )
 
-    def __str__(self):
-        return self.slug
-
     class Meta:
         ordering = ['name']
+
+    def __str__(self):
+        return self.slug
 
 
 class Category(models.Model):
@@ -38,11 +38,11 @@ class Category(models.Model):
         verbose_name='Категория',
     )
 
-    def __str__(self):
-        return self.slug
-
     class Meta:
         ordering = ['name']
+
+    def __str__(self):
+        return self.slug
 
 
 class Title(models.Model):
@@ -53,6 +53,9 @@ class Title(models.Model):
     )
     year = models.PositiveSmallIntegerField(
         verbose_name='Год издания',
+        validators=[
+            MaxValueValidator(datetime.now().year)
+        ]
     )
     category = models.ForeignKey(
         Category,
@@ -74,16 +77,11 @@ class Title(models.Model):
         verbose_name='Описание произведения',
     )
 
-    def __str__(self):
-        return self.name[:15]
-
-    def clean(self):
-        super().clean()
-        if self.year < 1900 or self.year > 2100:
-            raise ValidationError('Некорректный год')
-
     class Meta:
         ordering = ['name']
+
+    def __str__(self):
+        return self.name[:15]
 
 
 class Review(BaseModel):
