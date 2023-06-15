@@ -51,13 +51,11 @@ python3 manage.py runserver
 ```
 
 # Используемые технологии
-```
 - Python
 - Django
 - Django REST Framework
 - Simple JWT
 - SQLite3
-```
 
 # Уникальные manage команды
 Загрузка в БД тестовых данных:
