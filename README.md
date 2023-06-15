@@ -18,7 +18,6 @@
 http://127.0.0.1:8000/redoc/
 ```
 
-
 # Установка
 Клонируйте репозиторий на ваш ПК
 ```
@@ -53,18 +52,15 @@ python3 manage.py runserver
 
 # Используемые технологии
 ```
-1. Django
-2. Django REST Framework
+- Python
+- Django
+- Django REST Framework
+- Simple JWT
+- SQLite3
 ```
 
-# Документация
-Подробную информацию по работе с API можно получить из документации:
-```
-.../redoc/
-```
-
-# Кастомные manage команды
-Для загрузки в бд тестовых данных используйте команду:
+# Уникальные manage команды
+Загрузка в БД тестовых данных:
 ```
 python3 manage.py import_db_from_csv
 ```
